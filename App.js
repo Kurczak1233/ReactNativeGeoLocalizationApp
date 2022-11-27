@@ -53,7 +53,6 @@ export default function App() {
               location.coords.latitude,
               location.coords.longitude
             );
-            console.log(distance);
             if (distance < 30 && item.shouldNotTrack === undefined) {
               return setNearestPointText(item.locatlizationName);
             }
