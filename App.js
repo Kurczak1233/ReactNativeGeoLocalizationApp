@@ -1,22 +1,42 @@
 import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import * as Location from "expo-location";
 
 export default function App() {
+  const [position, setPosition] = useState({
+    latitude: 10,
+    longitude: 10,
+    latitudeDelta: 0.001,
+    longitudeDelta: 0.001,
+  });
   const [coordinates, setCoordinates] = useState();
 
-  const handleCoordinates = async () => {
+  const handleCoordinates = useCallback(async () => {
     const response = await fetch(
       "https://portal-api-prod-etflayreta-ew.a.run.app/MobileApi"
     );
-    fetch("https://portal-api-prod-etflayreta-ew.a.run.app/MobileApi")
-      .then((response) => response.json())
-      .then((data) => console.log(`data`, data));
-
     const data = await response.json();
     setCoordinates(data);
-  };
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      return;
+    }
+    const currentLocation = await Location.getCurrentPositionAsync({});
+    console.log(`currentLocation`, currentLocation, `data \n`, data);
+    setCoordinates((prev) => {
+      prev.push({
+        geolocation: {
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
+          latitudeDelta: 0.001,
+          longitudeDelta: 0.001,
+        },
+      });
+      return [...prev];
+    });
+  }, []);
 
   useEffect(() => {
     handleCoordinates();
@@ -33,8 +53,8 @@ export default function App() {
         initialRegion={{
           latitude: 49.783572,
           longitude: 19.05895,
-          latitudeDelta: 0.002,
-          longitudeDelta: 0.002,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
         }}
       >
         {coordinates.map((marker, index) => (
@@ -43,8 +63,8 @@ export default function App() {
             coordinate={{
               latitude: marker.geolocation.latitude,
               longitude: marker.geolocation.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
+              latitudeDelta: 0.002,
+              longitudeDelta: 0.002,
             }}
             title={marker.title}
             description={marker.description}
