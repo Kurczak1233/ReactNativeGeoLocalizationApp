@@ -21,6 +21,7 @@ export default function App() {
     const currentLocation = await Location.getCurrentPositionAsync({});
     setCoordinates((prev) => {
       prev.push({
+        shouldNotTrack: true,
         geolocation: {
           latitude: currentLocation.coords.latitude,
           longitude: currentLocation.coords.longitude,
@@ -53,7 +54,7 @@ export default function App() {
               location.coords.longitude
             );
             console.log(distance);
-            if (distance < 30 && distance != 0) {
+            if (distance < 30 && item.shouldNotTrack === undefined) {
               return setNearestPointText(item.locatlizationName);
             }
           });
