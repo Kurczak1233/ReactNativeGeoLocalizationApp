@@ -33,8 +33,8 @@ export default function App() {
         initialRegion={{
           latitude: 49.783572,
           longitude: 19.05895,
-          latitudeDelta: 0.0005,
-          longitudeDelta: 0.0005,
+          latitudeDelta: 0.002,
+          longitudeDelta: 0.002,
         }}
       >
         {coordinates.map((marker, index) => (
